@@ -1,4 +1,4 @@
-namespace HuntaBaddayCPUmod;
+namespace HuntasICLib.CPU;
 public class MOS6502 {
     // Values for lookup
     const int imm = 0;
