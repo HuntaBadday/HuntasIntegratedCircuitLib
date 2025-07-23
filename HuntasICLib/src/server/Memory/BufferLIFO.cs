@@ -1,77 +1,67 @@
 namespace HuntasICLib.Memory;
 
-public class BufferFIFO8b {
+public class BufferLIFO8b {
     public bool isFull = false;
     public bool dataAvailable = false;
     
     byte[] memory;
     
-    int writeVec;
-    int readVec;
+    int ptr;
     
-    public BufferFIFO8b(int size) {
+    public BufferLIFO8b(int size) {
         memory = new byte[size];
     }
     
     public void Reset() {
-        writeVec = 0;
-        readVec = 0;
+        ptr = 0;
         isFull = false;
         dataAvailable = false;
     }
     
     public void Write(byte data) {
         if (isFull) return;
-        memory[writeVec++] = data;
-        writeVec %= memory.Length;
+        memory[ptr++] = data;
+        if (ptr == memory.Length) isFull = true;
         dataAvailable = true;
-        if (writeVec == readVec) isFull = true;
     }
     
     public byte Read() {
-        if (writeVec == readVec && !isFull) return 0;
-        byte output = memory[readVec++];
-        readVec %= memory.Length;
+        if (ptr == 0) return 0;
         isFull = false;
-        if (writeVec == readVec) dataAvailable = false;
-        return output;
+        if (--ptr == 0) dataAvailable = false;
+        return memory[ptr];
     }
 }
 
-public class BufferFIFO16b {
+public class BufferLIFO16b {
     public bool isFull = false;
     public bool dataAvailable = false;
     
     ushort[] memory;
     
-    int writeVec;
-    int readVec;
+    int ptr;
     
-    public BufferFIFO16b(int size) {
+    public BufferLIFO16b(int size) {
         memory = new ushort[size];
     }
     
     public void Reset() {
-        writeVec = 0;
-        readVec = 0;
+        ptr = 0;
         isFull = false;
         dataAvailable = false;
     }
     
     public void Write(ushort data) {
         if (isFull) return;
-        memory[writeVec++] = data;
-        writeVec %= memory.Length;
+        memory[ptr++] = data;
+        if (ptr == memory.Length) isFull = true;
         dataAvailable = true;
-        if (writeVec == readVec) isFull = true;
     }
     
     public ushort Read() {
-        if (writeVec == readVec && !isFull) return 0;
-        ushort output = memory[readVec++];
-        readVec %= memory.Length;
+        if (ptr == 0) return 0;
         isFull = false;
-        if (writeVec == readVec) dataAvailable = false;
-        return output;
+        if (--ptr == 0) dataAvailable = false;
+        return memory[ptr];
     }
 }

@@ -1713,7 +1713,6 @@ public class MOS6502 {
         
         // Registers
         byte ir = 0;
-        string irInst = -1; // 3 bytes always (NOT SAVED)
         int irMode = 0;
         int irAmt = 0;
         byte pcLo = 0;
@@ -1743,107 +1742,149 @@ public class MOS6502 {
         bool loadDBL1 = false;
         bool loadDBL2 = false;
         bool endInstruction = false;
+        
+        // CPU IO
+        public bool rdyState; // RDY pin input
+        public bool phi1State; // Phi1 clock output
+        public bool irqState; // IRQ pin input
+        public bool nmiState; // NMI pin input
+        public bool syncState; // Sync pin output
+        public ushort addressOutput; // Address bus output
+        public byte dataBusInput; // Data bus input
+        public byte dataBusOutput; // Data bus output
+        public bool rwState; // RW pin output
+        public bool phi0State; // Phi0 clock input
+        public bool soState; // SO pin input
+        public bool phi2State; // Phi2 clock output
+        public bool resState; // RES pin input
         */
         
-        byte[] data = new byte[38];
-        data[0] = Convert.ToByte(lastClkState);
-        data[1] = Convert.ToByte(pause);
-        data[2] = Convert.ToByte(lastRdy);
-        data[3] = Convert.ToByte(lastOFpinState);
-        data[4] = Convert.ToByte(phi1);
-        data[5] = Convert.ToByte(phi2);
-        data[6] = Convert.ToByte(isPhi2);
-        data[7] = Convert.ToByte(resetTrigger);
-        data[8] = Convert.ToByte(resetTriggerInt);
-        data[9] = Convert.ToByte(wasFetch);
-        data[10] = Convert.ToByte(insideInterrupt);
-        data[11] = (byte)interruptType; // Never more than a byte
+        MemoryStream ms = new MemoryStream();
+        BinaryWriter bw = new BinaryWriter(ms);
         
-        data[12] = (byte)irMode; // Never more than a byte
-        data[13] = (byte)irAmt; // Never more than a byte
-        data[14] = pcLo;
-        data[15] = pcHi;
-        data[16] = sp;
-        data[17] = st;
+        bw.Write(lastClkState);
+        bw.Write(pause);
+        bw.Write(lastRdy);
+        bw.Write(lastOFpinState);
+        bw.Write(phi1);
+        bw.Write(phi2);
+        bw.Write(isPhi2);
+        bw.Write(resetTrigger);
+        bw.Write(resetTriggerInt);
+        bw.Write(wasFetch);
+        bw.Write(insideInterrupt);
+        bw.Write(interruptType);
         
-        data[18] = acc;
-        data[19] = indexX;
-        data[20] = indexY;
+        bw.Write(ir);
+        bw.Write(irMode);
+        bw.Write(irAmt);
+        bw.Write(pcLo);
+        bw.Write(pcHi);
+        bw.Write(sp);
+        bw.Write(st);
         
-        data[21] = (byte)state; // Never more than a byte
-        data[22] = (byte)addrState; // Never more than a byte
-        data[23] = (byte)relState; // Never more than a byte
+        bw.Write(acc);
+        bw.Write(indexX);
+        bw.Write(indexY);
         
-        data[24] = Convert.ToByte(addressModeDone);
-        data[25] = Convert.ToByte(addressModeAcc);
+        bw.Write(state);
+        bw.Write(addrState);
+        bw.Write(relState);
+        bw.Write(addressModeDone);
+        bw.Write(addressModeAcc);
         
-        data[26] = DBL1;
-        data[27] = DBL2;
-        data[28] = Convert.ToByte(loadIr);
-        data[29] = Convert.ToByte(loadPCL);
-        data[30] = Convert.ToByte(loadPCH);
-        data[31] = Convert.ToByte(loadA);
-        data[32] = Convert.ToByte(loadX);
-        data[33] = Convert.ToByte(loadY);
-        data[34] = Convert.ToByte(loadSt);
-        data[35] = Convert.ToByte(loadDBL1);
-        data[36] = Convert.ToByte(loadDBL2);
-        data[37] = Convert.ToByte(endInstruction);
+        bw.Write(DBL1);
+        bw.Write(DBL2);
+        bw.Write(loadIr);
+        bw.Write(loadPCL);
+        bw.Write(loadPCH);
+        bw.Write(loadA);
+        bw.Write(loadX);
+        bw.Write(loadY);
+        bw.Write(loadSt);
+        bw.Write(loadDBL1);
+        bw.Write(loadDBL2);
+        bw.Write(endInstruction);
         
-        return data;
+        bw.Write(rdyState);
+        bw.Write(phi1State);
+        bw.Write(irqState);
+        bw.Write(nmiState);
+        bw.Write(syncState);
+        bw.Write(addressOutput);
+        bw.Write(dataBusInput);
+        bw.Write(dataBusOutput);
+        bw.Write(rwState);
+        bw.Write(phi0State);
+        bw.Write(soState);
+        bw.Write(phi2State);
+        bw.Write(resState);
+        
+        return ms.ToArray();
     }
     
     public void deserializeCPUState(byte[] data){
-        if(data == null){
-            // New object
-            return;
-        } else if(data.Length != 38){
-            // Bad data
-            return;
-        }
+        MemoryStream ms = new MemoryStream(data);
+        BinaryReader br = new BinaryReader(ms);
         
-        lastClkState = Convert.ToBoolean(data[0]);
-        pause = Convert.ToBoolean(data[1]);
-        lastRdy = Convert.ToBoolean(data[2]);
-        lastOFpinState = Convert.ToBoolean(data[3]);
-        phi1 = Convert.ToBoolean(data[4]);
-        phi2 = Convert.ToBoolean(data[5]);
-        isPhi2 = Convert.ToBoolean(data[6]);
-        resetTrigger = Convert.ToBoolean(data[7]);
-        resetTriggerInt = Convert.ToBoolean(data[8]);
-        wasFetch = Convert.ToBoolean(data[9]);
-        insideInterrupt = Convert.ToBoolean(data[10]);
-        interruptType = (int)data[11];
+        lastClkState = br.ReadBoolean();
+        pause = br.ReadBoolean();
+        lastRdy = br.ReadBoolean();
+        lastOFpinState = br.ReadBoolean();
+        phi1 = br.ReadBoolean();
+        phi2 = br.ReadBoolean();
+        isPhi2 = br.ReadBoolean();
+        resetTrigger = br.ReadBoolean();
+        resetTriggerInt = br.ReadBoolean();
+        wasFetch = br.ReadBoolean();
+        insideInterrupt = br.ReadBoolean();
+        interruptType = br.ReadInt32();
         
-        irMode = (int)data[12];
-        irAmt = (int)data[13];
-        pcLo = data[14];
-        pcHi = data[15];
-        sp = data[16];
-        st = data[17];
+        ir = br.ReadByte();
+        irMode = br.ReadInt32();
+        irAmt = br.ReadInt32();
+        pcLo = br.ReadByte();
+        pcHi = br.ReadByte();
+        sp = br.ReadByte();
+        st = br.ReadByte();
         
-        acc = data[18];
-        indexX = data[19];
-        indexY = data[20];
+        acc = br.ReadByte();
+        indexX = br.ReadByte();
+        indexY = br.ReadByte();
         
-        state = (int)data[21];
-        addrState = (int)data[22];
-        relState = (int)data[23];
+        state = br.ReadInt32();
+        addrState = br.ReadInt32();
+        relState = br.ReadInt32();
+        addressModeDone = br.ReadBoolean();
+        addressModeAcc = br.ReadBoolean();
         
-        addressModeDone = Convert.ToBoolean(data[24]);
-        addressModeAcc = Convert.ToBoolean(data[25]);
+        DBL1 = br.ReadByte();
+        DBL2 = br.ReadByte();
+        loadIr = br.ReadBoolean();
+        loadPCL = br.ReadBoolean();
+        loadPCH = br.ReadBoolean();
+        loadA = br.ReadBoolean();
+        loadX = br.ReadBoolean();
+        loadY = br.ReadBoolean();
+        loadSt = br.ReadBoolean();
+        loadDBL1 = br.ReadBoolean();
+        loadDBL2 = br.ReadBoolean();
+        endInstruction = br.ReadBoolean();
         
-        DBL1 = data[26];
-        DBL2 = data[27];
-        loadIr = Convert.ToBoolean(data[28]);
-        loadPCL = Convert.ToBoolean(data[29]);
-        loadPCH = Convert.ToBoolean(data[30]);
-        loadA = Convert.ToBoolean(data[31]);
-        loadX = Convert.ToBoolean(data[32]);
-        loadY = Convert.ToBoolean(data[33]);
-        loadSt = Convert.ToBoolean(data[34]);
-        loadDBL1 = Convert.ToBoolean(data[35]);
-        loadDBL2 = Convert.ToBoolean(data[36]);
-        endInstruction = Convert.ToBoolean(data[37]);
+        rdyState = br.ReadBoolean();
+        phi1State = br.ReadBoolean();
+        irqState = br.ReadBoolean();
+        nmiState = br.ReadBoolean();
+        syncState = br.ReadBoolean();
+        
+        addressOutput = br.ReadUInt16();
+        dataBusInput = br.ReadByte();
+        dataBusOutput = br.ReadByte();
+        
+        rwState = br.ReadBoolean();
+        phi0State = br.ReadBoolean();
+        soState = br.ReadBoolean();
+        phi2State = br.ReadBoolean();
+        resState = br.ReadBoolean();
     }
 }
