@@ -4,10 +4,13 @@
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <RootNamespace>HuntasICLib</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="HuntasICLib\src\server\" />
+      <Reference Include="JimmysUnityUtilities">
+        <HintPath>..\LogicWorld\Server\JimmysUnityUtilities.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>
