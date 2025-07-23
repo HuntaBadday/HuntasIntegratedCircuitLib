@@ -9,10 +9,12 @@ public class BufferFIFO8b {
     int writeVec;
     int readVec;
     
+    // Initialize buffer with specified size
     public BufferFIFO8b(int size) {
         memory = new byte[size];
     }
     
+    // Reset buffer (Clears)
     public void Reset() {
         writeVec = 0;
         readVec = 0;
@@ -20,6 +22,7 @@ public class BufferFIFO8b {
         dataAvailable = false;
     }
     
+    // Write data to the buffer
     public void Write(byte data) {
         if (isFull) return;
         memory[writeVec++] = data;
@@ -28,6 +31,7 @@ public class BufferFIFO8b {
         if (writeVec == readVec) isFull = true;
     }
     
+    // Read data from the buffer
     public byte Read() {
         if (writeVec == readVec && !isFull) return 0;
         byte output = memory[readVec++];
@@ -38,6 +42,7 @@ public class BufferFIFO8b {
     }
 }
 
+// Same as BufferFIFO8b except uses ushort for data
 public class BufferFIFO16b {
     public bool isFull = false;
     public bool dataAvailable = false;
