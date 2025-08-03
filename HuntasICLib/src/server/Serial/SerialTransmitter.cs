@@ -1,9 +1,10 @@
 using System;
+using System.IO;
 
 namespace HuntasICLib.Serial;
 
 class SerialTransmitter {
-    readonly int bits;
+    int bits;
     
     ulong valueToSend;
     
@@ -47,5 +48,30 @@ class SerialTransmitter {
             return true;
         }
         return false;
+    }
+    
+    public byte[] Serialize() {
+        MemoryStream m = new MemoryStream();
+        BinaryWriter w = new BinaryWriter(m);
+        w.Write(bits);
+        w.Write(valueToSend);
+        w.Write(ready);
+        w.Write(state);
+        return m.ToArray();
+    }
+    
+    public void Deserialize(byte[] data) {
+        if (data == null) {
+            return;
+        }
+        
+        try {
+            MemoryStream m = new MemoryStream(data);
+            BinaryReader r = new BinaryReader(m);
+            bits = r.ReadInt32();
+            valueToSend = r.ReadUInt64();
+            ready = r.ReadBoolean();
+            state = r.ReadInt32();
+        } catch {}
     }
 }

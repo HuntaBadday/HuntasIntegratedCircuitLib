@@ -3,7 +3,7 @@ using System;
 namespace HuntasICLib.Serial;
 
 class SerialReceiver {
-    readonly int bits;
+    int bits;
     
     // Contains the received value
     public ulong receivedValue {get; private set;}
@@ -36,5 +36,28 @@ class SerialReceiver {
             }
         }
         return false;
+    }
+    
+    public byte[] Serialize() {
+        MemoryStream m = new MemoryStream();
+        BinaryWriter w = new BinaryWriter(m);
+        w.Write(bits);
+        w.Write(receivedValue);
+        w.Write(state);
+        return m.ToArray();
+    }
+    
+    public void Deserialize(byte[] data) {
+        if (data == null) {
+            return;
+        }
+        
+        try {
+            MemoryStream m = new MemoryStream(data);
+            BinaryReader r = new BinaryReader(m);
+            bits = r.ReadInt32();
+            receivedValue = r.ReadUInt64();
+            state = r.ReadInt32();
+        } catch {}
     }
 }
