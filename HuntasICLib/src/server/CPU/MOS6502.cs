@@ -1,3 +1,4 @@
+using System.IO;
 namespace HuntasICLib.CPU;
 public class MOS6502 {
     // Values for lookup
