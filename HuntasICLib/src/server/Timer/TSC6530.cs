@@ -1,3 +1,5 @@
+using System;
+
 namespace HuntasICLib.Timer;
 
 public class TSC6530 {
