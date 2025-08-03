@@ -38,3 +38,9 @@ There are two types of buffers, FIFO (First In First Out) and LIFO (Last In Firs
 
 ## Serial transmitters/receivers
 See ``HuntasICLib/src/server/Serial``
+
+## Timers
+### TSC 6530
+``HuntasICLib.Timer.TSC6530``
+
+The TSC6530 is essentially just the timers from a MOS6526. See the source code for I/O information. Documentation can be found in the same directory as the IC.
