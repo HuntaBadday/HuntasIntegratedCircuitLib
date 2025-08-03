@@ -35,3 +35,6 @@ For I/O reference, see code comments in CPU IO section (Line 263) ``HuntasICLib/
 
 ## Buffers
 There are two types of buffers, FIFO (First In First Out) and LIFO (Last In First Out). Each has an 8 bit and a 16 bit variation. See ``HuntasICLib/src/server/Memory/`` reference.
+
+## Serial transmitters/receivers
+See ``HuntasICLib/src/server/Serial``
