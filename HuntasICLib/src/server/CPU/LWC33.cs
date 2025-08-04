@@ -4,7 +4,7 @@ using JimmysUnityUtilities.Random;
 
 namespace HuntasICLib.CPU;
 
-public class TSC_LWC33 {
+public class LWC33 {
     // Constants for each opcode
     const int BRK = 0;
     const int JMP = 1;
