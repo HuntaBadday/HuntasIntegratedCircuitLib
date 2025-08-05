@@ -3,13 +3,14 @@ using System.IO;
 
 namespace HuntasICLib.Serial;
 
-class SerialReceiver {
+public class SerialReceiver {
     int bits;
     
     // Contains the received value
-    public ulong receivedValue {get; private set;}
+    public ulong value {get; private set;}
+    public bool available = false;
     
-    int state = 0;
+    public int state {get; private set;}
     // 0: Idle
     // 1+: Bit being received
     
@@ -19,20 +20,23 @@ class SerialReceiver {
             throw new ArgumentOutOfRangeException();
         }
         bits = bitWidth;
+        state = 0;
     }
     
     // Update the logic with specified input state
     // Returns true when value is received
     public bool LogicUpdate(bool pinState) {
+        available = false;
         if (state == 0) {
             if (pinState) {
                 state = 1;
-                receivedValue = 0;
+                value = 0;
             }
         } else {
-            receivedValue |= pinState ? (ulong)(1<<(state-1)) : 0;
+            value |= pinState ? (ulong)(1<<(state-1)) : 0;
             if (state++ == bits) {
                 state = 0;
+                available = true;
                 return true;
             }
         }
@@ -43,7 +47,7 @@ class SerialReceiver {
         MemoryStream m = new MemoryStream();
         BinaryWriter w = new BinaryWriter(m);
         w.Write(bits);
-        w.Write(receivedValue);
+        w.Write(value);
         w.Write(state);
         return m.ToArray();
     }
@@ -57,7 +61,7 @@ class SerialReceiver {
             MemoryStream m = new MemoryStream(data);
             BinaryReader r = new BinaryReader(m);
             bits = r.ReadInt32();
-            receivedValue = r.ReadUInt64();
+            value = r.ReadUInt64();
             state = r.ReadInt32();
         } catch {}
     }

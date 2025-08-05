@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 namespace HuntasICLib.Serial;
 
 // A class to send TNET packets

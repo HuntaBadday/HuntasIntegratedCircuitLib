@@ -3,7 +3,7 @@ using System.IO;
 
 namespace HuntasICLib.Serial;
 
-class SerialTransmitter {
+public class SerialTransmitter {
     int bits;
     
     ulong valueToSend;
@@ -11,7 +11,7 @@ class SerialTransmitter {
     // True when no data is being sent
     public bool ready {get; private set;}
     
-    public int state = 0;
+    public int state {get; private set;}
     // 0: Idle
     // 1+: Bit being transmitted
     
@@ -22,6 +22,7 @@ class SerialTransmitter {
         }
         bits = bitWidth;
         ready = true;
+        state = 0;
     }
     
     // Update logic
@@ -31,10 +32,15 @@ class SerialTransmitter {
             return false;
         }
         
+        if (state == 0) {
+            state++;
+            return true;
+        }
+        
         bool output = (valueToSend & 1) != 0;
         valueToSend >>= 1;
         
-        if (++state == bits) ready = true;
+        if (state++ == bits) ready = true;
         
         return output;
     }
