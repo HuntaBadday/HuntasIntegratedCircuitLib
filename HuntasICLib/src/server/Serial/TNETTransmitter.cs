@@ -43,6 +43,7 @@ public class TNETTransmitter {
             }
             case MODE_SEND_START: {
                 output = true;
+                currentMode = MODE_BYTE_SEND;
                 bitCounter = 0;
                 currentByte = sendBuffer[sendIndex++];
                 break;

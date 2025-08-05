@@ -19,7 +19,7 @@ public class TNETReceiver {
     private List<byte[]> packetStack = new List<byte[]>(); // All packets received
     
     public void Reset(){
-        currentMode = MODE_IPG_WAIT;
+        currentMode = MODE_FAIL_WAIT;
         bitCounter = 0;
         packetStack.Clear();
     }
@@ -48,6 +48,7 @@ public class TNETReceiver {
             case MODE_IPG_WAIT: {
                 if (!pinState) {
                     if (++bitCounter == 12) {
+                        Console.WriteLine("Packet received");
                         ProcessReceivedPacket();
                         currentMode = MODE_IDLE;
                     }
@@ -80,7 +81,7 @@ public class TNETReceiver {
             packetStack.RemoveAt(0);
             return packet;
         }
-        return null;
+        return new byte[0];
     }
     
     // Check if there is an available packet
@@ -105,6 +106,7 @@ public class TNETReceiver {
         if (sum == checksum) {
             byte[] output = new byte[receiveIndex-4];
             Buffer.BlockCopy(receiveBuffer, 0, output, 0, receiveIndex-4);
+            packetStack.Add(output);
         }
     }
 }
