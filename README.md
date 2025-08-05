@@ -6,6 +6,9 @@ HuntasICLib is a library that provides building blocks for other components to u
 To install, copy the ``HuntasICLib`` folder to Logic World's ``GameData`` folder.
 
 ## Available classes
+## HCPacker
+``HCPacker`` and ``HCUnpacker`` are classes used to easily pack multiple byte array into one, and to easily unpack the byte arrays in order.
+
 ## CPU
 ### TSC-LWC33
 Documentation: https://huntabadday.com/docs/TSC-LWC33.pdf
