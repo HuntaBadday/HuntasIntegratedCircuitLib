@@ -51,7 +51,6 @@ public class SerialReceiver {
     public byte[] Serialize() {
         MemoryStream m = new MemoryStream();
         BinaryWriter w = new BinaryWriter(m);
-        w.Write(bits);
         w.Write(value);
         w.Write(state);
         return m.ToArray();
@@ -65,7 +64,6 @@ public class SerialReceiver {
         try {
             MemoryStream m = new MemoryStream(data);
             BinaryReader r = new BinaryReader(m);
-            bits = r.ReadInt32();
             value = r.ReadUInt64();
             state = r.ReadInt32();
         } catch {}

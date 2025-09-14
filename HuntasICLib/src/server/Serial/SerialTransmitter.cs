@@ -40,7 +40,7 @@ public class SerialTransmitter {
         bool output = (valueToSend & 1) != 0;
         valueToSend >>= 1;
         
-        if (state++ == bits) ready = true;
+        if (state++ >= bits) ready = true;
         
         return output;
     }
@@ -65,7 +65,6 @@ public class SerialTransmitter {
     public byte[] Serialize() {
         MemoryStream m = new MemoryStream();
         BinaryWriter w = new BinaryWriter(m);
-        w.Write(bits);
         w.Write(valueToSend);
         w.Write(ready);
         w.Write(state);
@@ -80,7 +79,6 @@ public class SerialTransmitter {
         try {
             MemoryStream m = new MemoryStream(data);
             BinaryReader r = new BinaryReader(m);
-            bits = r.ReadInt32();
             valueToSend = r.ReadUInt64();
             ready = r.ReadBoolean();
             state = r.ReadInt32();
