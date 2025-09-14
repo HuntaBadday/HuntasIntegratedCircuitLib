@@ -56,6 +56,12 @@ public class SerialTransmitter {
         return false;
     }
     
+    // Reset internal state
+    public void Reset() {
+        ready = true;
+        state = 0;
+    }
+    
     public byte[] Serialize() {
         MemoryStream m = new MemoryStream();
         BinaryWriter w = new BinaryWriter(m);
